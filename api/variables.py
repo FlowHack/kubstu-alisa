@@ -1,4 +1,5 @@
 from datetime import date, timezone, datetime, timedelta
+from time import strptime
 
 FACULTIES = {
     ('институт нефти газа и энергетики', 'нефти газа и энергетики', 
@@ -74,12 +75,16 @@ CREATE_PROFILE = {
 FACULTIES_ERROR = 'Что-то не так! Скажите сокращено. А если пишите, то без специальных сиволов!'
 COURSE_ERROR = 'Что-то не так! Не может быть такой год начала обучения! Введите последние 2 цифры года. Повторите попытку!'
 CREATE_PROFILE_NAME = 'Давайте начнём! Если захотите закончить, скажите "Алиса, хватит". Для начала назовите своё имя. Если не хотите его говорить, то просто скажите "Студент"'
-COMPLETE_SETTINGS = 'Настройка завершена! Если вы захотите изменить данные, скажите мне "Настроить профиль". Вы можете спросить у меня "Какая пара сейчас" или "Расписание на сегодня" или "Расписание на завтра"'
+COMPLETE_SETTINGS = 'Настройка завершена! Если вы захотите изменить данные, скажите мне "Настроить профиль". Чтобы узнать команды, так и скажите мне "Команды"'
 COMMANDS = '''
 Чтобы узнать какая пара сейчас, скажите "Пара сейчас" или "Сейчас"
+Чтобы узнать какая пара скоро будет, скажите "Какая пара в ближайшее время" или "В ближайшее вермя"
 Чтобы узнать расписание на сегодня, скажите "Расписание на сегодня" или просто "На сегодня"
 Чтобы узнать расписание на завтра, скажите "Расписание на завтра" или просто "На завтра"
+Чтобы узнать расписание через N дней, скажите "какие пары через N дней" или "через N дней"
+Чтобы узнать расписание N дней назад, скажите "какие пары были N дней назад" или "N дней назад"
 Чтобы изменить данные, скажите "Настроить профиль"
+Чтобы узнать доступные команды, скажите мне "Команды"
 '''
 NOT_MAY_FREE = 'Вы не настроили профиль, скажите мне "Настроить профиль".'
 NEW_NOT_MAY_FREE = 'Вы не настроили профиль, скажите мне "Настроить профиль".'
@@ -93,12 +98,59 @@ WEEKDAYS = {
     5: 'Суббота',
     6: 'Воскресенье'
 }
+PARS_BY_NUMBER = {
+    '1': 'Первой',
+    '2': 'Второй',
+    '3': 'Третьей',
+    '4': 'Четвёртой',
+    '5': 'Пятой',
+    '6': 'Шестой',
+    '7': 'Седьмой',
+    '8': 'Восьмой',
+    '9': 'Девятой',
+    '10': 'Десятой'
+}
+PARS_BY_NAME = {
+    1: 'Первая',
+    2: 'Вторая',
+    3: 'Третяя',
+    4: 'Четрвёртая',
+    5: 'Пятая',
+    6: 'Шестая',
+    7: 'Седьмая',
+    8: 'Восьмая',
+    9: 'Девятая',
+    10: 'Десятая'
+}
+CORPUS = {
+    'К9': 'Красная 91',
+    'Ф': 'Московская 2, корпус Ф',
+    'К': 'Красная 135',
+    'А': 'Московская 2',
+    'Б': 'Московская 2, корпус Б'
+}
 
-today = lambda: date.today()
+DAYS = list(WEEKDAYS.values())
+
+offset = timezone(timedelta(hours=3))
+today = lambda: datetime.now(offset)
+tomorrow = lambda: today() + timedelta(days=1)
+
+tomorrow_year = lambda: tomorrow().year
+tomorrow_month = lambda: tomorrow().month
+tomorrow_day = lambda: tomorrow().day
+tomorrow_weekday = lambda: tomorrow().weekday()
+
 today_year = lambda: today().year
 today_month = lambda: today().month
 today_day = lambda: today().day
-today_weekday = lambda: datetime.today().weekday()
-offset = timezone(timedelta(hours=3))
-time_now = lambda: [datetime.now(offset).hour, datetime.now(offset).minute]
-URL = 'https://elkaf.kubstu.ru/timetable/default/time-table-student-ofo?iskiosk=0&fak_id={faculties}&kurs={curs}&gr={year_start_learn}-{form_of_learn}-{direction}{group}&ugod={year}&semestr={semestr}'
+today_weekday = lambda: today().weekday()
+today_hour = lambda: today().hour
+today_minute = lambda: today().minute
+
+day_after_days = lambda days: today() + timedelta(days=days)
+day_before_days = lambda days: today() - timedelta(days=days)
+
+str_to_time = lambda time: strptime(time, '%H.%M') 
+
+URL = 'https://elkaf.kubstu.ru/timetable/default/time-table-student-ofo?iskiosk=0&fak_id={faculties}&kurs={course}&gr={year_start_learn}-{form_of_learn}-{direction}{group}&ugod={year}&semestr={semestr}'

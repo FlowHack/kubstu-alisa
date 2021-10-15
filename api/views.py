@@ -18,7 +18,6 @@ def index(request):
     command = str(request.data.get('request').get('command').lower())
     session = bool(request.data.get('session').get('new'))
     exists = ProfileStudent.objects.filter(user_id=user_id).exists()
-    print(command)
 
     if not exists and not similarity('настроить профиль', command):
         response['response']['text'] = FIRST_START if session else FIRST_START_RETRY
@@ -36,6 +35,9 @@ def index(request):
 def handler(command: str, user: object, user_id, session):
     state = user.state if user is not None else None
 
+    if session and state == 'Complete':
+        return 'Привет! Если вы хотите узнать команды, то скажите мне "Команды"'
+
     if similarity('настроить профиль', command) or  \
         similarity('настройка профиля', command) or  \
         similarity('настроить', command) or  \
@@ -44,18 +46,45 @@ def handler(command: str, user: object, user_id, session):
 
     if 'create_profile:' in state:
         return create_profile(command, user, user_id, state, session)
-
-    if similarity('какая пара сейчас', command) or  \
-        similarity('сейчас', command) or  \
-        similarity('пара сейчас', command):
-        pass
     
     if similarity('на сегодня', command) or  \
         similarity('расписание на сегодня', command) or  \
-        similarity('пары на сегодня', command):
-        pass
+        similarity('пары на сегодня', command) or  \
+        similarity('сегодня', command):
+        return get_schedule_today_tomorrow(user)
     
     if similarity('на завтра', command) or  \
         similarity('расписание на завтра', command) or  \
-        similarity('пары на завтра', command):
-        pass
+        similarity('пары на завтра', command) or  \
+        similarity('завтра', command):
+        return get_schedule_today_tomorrow(user, today=False)
+
+    if similarity('команды', command) or  \
+        similarity('какие есть команды', command) or  \
+        similarity('все команды', command):
+        return COMMANDS
+    
+    if 'пары через' in command or  \
+        'через' in command:
+        return get_schedule_after_before_days(user, command)
+    
+    if 'пары были' in command or  \
+        'дней назад' in command or  \
+        'дня назад' in command or  \
+        'день назад':
+        return get_schedule_after_before_days(user, command, after=False)
+
+    if similarity('какая пара сейчас', command) or  \
+        similarity('сейчас', command) or  \
+        similarity('пара сейчас', command or  \
+        similarity('скоро', command) or  \
+        similarity('какая пара скоро', command) or  \
+        similarity('какая пара будет скоро', command) or  \
+        similarity('какая пара в ближайшее время', command) or  \
+        similarity('какая пара будет в ближайшее время', command) or  \
+        similarity('в ближайшее время', command) or  \
+        similarity('ближайшее время', command) or  \
+        similarity('пара в ближайшее время', command)):
+        return get_schedule_now(user)
+    
+    return 'Такой команды нет, чтобы узнать команды, скажите мне "Команды"'
