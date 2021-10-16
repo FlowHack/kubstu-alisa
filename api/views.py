@@ -57,11 +57,12 @@ def handler(command: str, user: object, user_id, session):
         similarity('расписание на завтра', command) or  \
         similarity('пары на завтра', command) or  \
         similarity('завтра', command):
-        return get_schedule_today_tomorrow(user, today=False)
+        return get_schedule_today_tomorrow(user, _today=False)
 
     if similarity('команды', command) or  \
         similarity('какие есть команды', command) or  \
-        similarity('все команды', command):
+        similarity('все команды', command) or  \
+        similarity('помощь', command):
         return COMMANDS
     
     if 'пары через' in command or  \
