@@ -1,9 +1,10 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from .functions import *
 
+from .functions import *
 from .models import ProfileStudent
+
 
 @api_view(['POST'])
 def index(request):
@@ -20,6 +21,9 @@ def index(request):
     exists = ProfileStudent.objects.filter(user_id=user_id).exists()
 
     if not exists and not similarity('настроить профиль', command):
+        if similarity('помощь', command):
+            response['response']['text'] = HELP
+            return response
         response['response']['text'] = FIRST_START if session else FIRST_START_RETRY
         return Response(response)
     

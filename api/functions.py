@@ -1,9 +1,12 @@
+import calendar
 from difflib import SequenceMatcher
-from .models import ProfileStudent
+
 import requests
 from bs4 import BeautifulSoup
+
+from .models import ProfileStudent
 from .variables import *
-import calendar
+
 
 def similarity(need: str, text: str):
         matcher = SequenceMatcher(a=need, b=text).ratio()
