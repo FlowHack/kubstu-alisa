@@ -6,7 +6,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY') or os.getenv('SECRET_KEY')
 
 DEBUG = int(os.environ.get('DEBUG', default=0))
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['18.119.100.120', 'kubstu-alisa.tk', 'www.kubstu-alisa.tk']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,8 +50,8 @@ WSGI_APPLICATION = 'kubstu_alisa.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('POSTGRES_ENGINE'),
-        'NAME': os.environ.get('POSTGRES_DB'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
